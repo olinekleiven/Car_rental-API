@@ -3,16 +3,17 @@ from flask import Flask, request, jsonify, Blueprint
 
 routes = Blueprint('routes', __name__)
 
-@routes.route('/')
+@routes.route("/")
 def home():
-    return "Welcome to the Car Rental API!"
+    return "Welcome to the car rental api"
 
 @routes.route('/test-query', methods=['GET'])
 def test_query():
     conn = nc()
     result = conn.query("MATCH (n) RETURN n LIMIT 5")
     conn.close()
-    return jsonify([record['n'] for record in result])
+    result_dicts = [record['n']._properties for record in result]
+    return jsonify(result_dicts)
 
 @routes.route('/add-record', methods=['POST'])
 def add_record():
@@ -29,4 +30,5 @@ def add_record():
     result = conn.query(query, parameters)
     conn.close()
     
-    return jsonify([record['p'] for record in result])
+    result_dicts = [record['p']._properties for record in result]
+    return jsonify(result_dicts)

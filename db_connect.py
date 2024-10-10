@@ -5,7 +5,7 @@ import os
 load_dotenv()
 
 class Neo4jConnection:
-    def __init__(self, uri, user, password):
+    def __init__(self):
         uri= os.getenv("URI")
         user= os.getenv("USERNAME")
         password= os.getenv("PASSWORD")
