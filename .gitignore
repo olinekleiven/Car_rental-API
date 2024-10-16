@@ -1,3 +1,4 @@
 .env
 dotenv.env
 .venv
+__pycache__/
