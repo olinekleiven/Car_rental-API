@@ -7,9 +7,11 @@ load_dotenv()
 
 class Neo4jConnection:
     def __init__(self):
+
         uri = os.getenv("URI")
         user = os.getenv("USERNAME")
         password = os.getenv("PASSWORD")
+
         self._driver = GraphDatabase.driver(uri, auth=(user, password))
     
     def close(self):

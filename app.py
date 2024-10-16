@@ -1,16 +1,15 @@
-from flask import Flask, request, jsonify
+# app.py
+#import logging
+from flask import Flask
 from flask_cors import CORS
-import logging
+from query_api import routes  
 
 app = Flask(__name__)
 CORS(app)
 
-# Sett opp logging
-logging.basicConfig(level=logging.DEBUG)
+app.register_blueprint(routes)
 
-@app.route('/')
-def home():
-    return "Welcome to the Car Rental API!"
+#logging.basicConfig(level=logging.DEBUG)
 
 # Kode for å legge inn POST /cars
 @app.route('/cars', methods=['POST'])
