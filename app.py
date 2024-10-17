@@ -228,7 +228,7 @@ def add_employee():
 
     conn = nc()
     query = """
-    CREATE (e:Employee {id: apoc.create.uuid(), name: $name, adress: $adress, branch: $branch})
+    CREATE (e:Employee {name: $name, adress: $adress, branch: $branch})
     RETURN e
     """
     parameters = {'name': name, 'adress': adress, 'branch': branch}
@@ -265,14 +265,14 @@ def get_employee():
 @app.route('/update_employee', methods=['POST'])
 def update_employee():
     data = request.json
-    id=data.get("id")
+  
     name = data.get('name')
     adress = data.get('adress')
     branch = data.get('branch')
  
     conn = nc()
     query = """
-    MATCH (e:Employee {id: $id})
+    MATCH (e:Employee {name: $name})
     SET e.name = $name, e.adress = $adress, e.branch = $branch
     RETURN e
     """
@@ -305,7 +305,7 @@ def delete_employee():
     DETACH DELETE e
     """
 
-    parameters = {'id':id ,'name': name, 'branch': branch, 'adress': adress,}
+    parameters = {'name': name, 'branch': branch, 'adress': adress,}
     result = conn.query(query, parameters)
 
     conn.close()
