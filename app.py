@@ -2,14 +2,14 @@
 #import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from query_api import routes  
+
 from db_connect import Neo4jConnection as nc
 import logging
 from flask import Blueprint
 app = Flask(__name__)
 CORS(app)   
 car_api = Blueprint('car_api', __name__)
-app.register_blueprint(routes)
+
 
 logging.basicConfig(level=logging.DEBUG)
 
