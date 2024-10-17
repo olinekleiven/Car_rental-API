@@ -24,14 +24,15 @@ def add_car():
     year = data.get('year')
     location = data.get('location')
     status = data.get('status')
+    car_id=data.get('car_id')
 
 # Connect to Neo4j and add the car
     conn = nc()
     query = """
-    CREATE (c:Car {make: $make, model: $model, year: $year, location: $location, status: $status})
+    CREATE (c:Car {make: $make, model: $model, year: $year, location: $location, status: $status, car_id: $car_id})
     RETURN c
     """
-    parameters = {'make': make, 'model': model, 'year': year, 'location': location, 'status': status}
+    parameters = {'make': make, 'model': model, 'year': year, 'location': location, 'status': status, 'car_id':car_id}
     result = conn.query(query, parameters)
     conn.close()
 
@@ -45,15 +46,18 @@ def add_car():
     return jsonify(response), 201
 
 
-@app.route('/get_cars', methods=['GET'])
+@app.route('/get_car', methods=['GET'])
 def get_cars():
+    data=request.json
+    car_id=data.get('car_id')
     conn = nc()
     query = """
-    MATCH (c:Car)
+    MATCH (c:Car {car_id: $car_id})
     RETURN c
     """
+    parameters = {'car_id': car_id}
     try:
-        result = conn.query(query)
+        result = conn.query(query, parameters)
         conn.close()
         if not result:
             app.logger.debug("No cars found in the database.")
@@ -74,15 +78,15 @@ def update_car():
     year = data.get('year')
     location = data.get('location')
     status = data.get('status')
-
+    car_id=data.get('car_id')
     conn = nc()
     query = """
-    MATCH (c:Car {make: $make, model: $model})
+    MATCH (c:Car {car_id: $car_id})})
     SET c.year = $year, c.location = $location, c.status = $status
     RETURN c
     """
 
-    parameters = {'make': make, 'model': model, 'year': year, 'location': location, 'status': status}
+    parameters = {'car_id':car_id, 'make': make, 'model': model, 'year': year, 'location': location, 'status': status}
     result = conn.query(query, parameters)
     conn.close()
     # Extract the properties of the created car node
@@ -98,23 +102,21 @@ def update_car():
 @app.route('/delete_car', methods=['POST'])
 def delete_car():
     data = request.json
-    make = data.get('make')
-    model = data.get('model')
+    car_id = data.get('car_id')
 
     conn = nc()
     query = """
-    MATCH (c:Car {make: $make, model: $model})
+    MATCH (c:Car {car_id: $car_id})
     DETACH DELETE c
     """
 
-    parameters = {'make': make, 'model': model}
+    parameters = {'car_id': car_id}
     conn.query(query, parameters)
     conn.close()
 
     response = {
         "message": "Car deleted successfully",
-        "make": make,
-        "model": model
+        "car_id": car_id
     }
     return jsonify(response), 200 
 
@@ -124,13 +126,14 @@ def add_customer():
     name = data.get('name')
     age = data.get('age')
     adress = data.get('adress')
+    customer_id=data.get('customer_id')
 
     conn = nc()
     query = """
-    CREATE (c:Customer {name: $name, age: $age, adress: $adress})
+    CREATE (c:Customer {name: $name, age: $age, adress: $adress, customer_id: $customer_id})
     RETURN c
     """
-    parameters = {'name': name, 'age': age, 'adress': adress}
+    parameters = {'name': name, 'age': age, 'adress': adress, 'customer_id': customer_id}
     result = conn.query(query, parameters)
     conn.close()
 
@@ -143,15 +146,18 @@ def add_customer():
     return jsonify(response), 201
 
 #GET COSYUMER
-@app.route('/get_customers', methods=['GET'])
+@app.route('/get_customer', methods=['GET'])
 def get_customer():
+    data=request.json
+    customer_id=data.get('customer_id')
     conn = nc()
     query = """
-    MATCH (c:Customer)
+    MATCH (c:Customer {customer_id: $customer_id})
     RETURN c
     """
     try:
-        result = conn.query(query)
+        parameters = {'customer_id': customer_id}
+        result = conn.query(query,parameters)
         conn.close()
         
         customers = [record['c']._properties for record in result]
@@ -168,16 +174,17 @@ def update_customer():
     name = data.get('name')
     age = data.get('age')
     adress = data.get('adress')
+    customer_id=data.get('customer_id')
  
     conn = nc()
     query = """
-    MATCH (c:Customer {name: $name})
+    MATCH (c:Customer {customer_id: $customer_id})
     SET c.name = $name, c.age = $age, c.adress = $adress
     RETURN c
     """
         # sjøl om vi skriver name her kunne vi hatt id
 
-    parameters = {'name': name, 'age': age, 'adress': adress}
+    parameters = {'name': name, 'age': age, 'adress': adress, 'customer_id': customer_id}
     result = conn.query(query, parameters)
     conn.close()
     # Extract the properties of the created car node
@@ -193,25 +200,21 @@ def update_customer():
 @app.route('/delete_customer', methods=['POST'])
 def delete_customer():
     data = request.json
-    name = data.get('name')
-    age = data.get('age')
-    adress = data.get('adress')
+    customer_id=data.get('customer_id')
 
     conn = nc()
     query = """
-    MATCH (c:Customer {name: $name})
+    MATCH (c:Customer {customer_id: $customer_id})
     DETACH DELETE c
     """
 
-    parameters = {'name': name, 'age': age, 'adress': adress}
+    parameters = {'customer_id': customer_id}
     conn.query(query, parameters)
     conn.close()
 
     response = {
         "message": "Customer deleted successfully",
-        "name": name,
-        "age": age,
-        "adress": adress
+        "customer_id": customer_id
     }
     return jsonify(response), 200 
 
@@ -225,34 +228,38 @@ def add_employee():
     name = data.get('name')
     adress = data.get('adress')
     branch = data.get('branch')
+    employee_id=data.get('employee_id')
 
     conn = nc()
     query = """
-    CREATE (e:Employee {name: $name, adress: $adress, branch: $branch})
+    CREATE (e:Employee {name: $name, adress: $adress, branch: $branch, employee_id: $employee_id})
     RETURN e
     """
-    parameters = {'name': name, 'adress': adress, 'branch': branch}
+    parameters = {'name': name, 'adress': adress, 'branch': branch, 'employee_id': employee_id}
     result = conn.query(query, parameters)
+    
     conn.close()
 
     employee = result[0]['e']._properties if result else {}
-
     response = {
         "message": "Employee added successfully",
-        "employee": employee
+        "employee": employee,
     }
     return jsonify(response), 201
 
 #GET EMPLOYEE
-@app.route('/get_employees', methods=['GET'])
+@app.route('/get_employee', methods=['GET'])
 def get_employee():
+    data=request.json
+    employee_id=data.get('employee_id')
     conn = nc()
     query = """
-    MATCH (e:Employee)
+    MATCH (e:Employee{employee_id: $employee_id})
     RETURN e
     """
     try:
-        result = conn.query(query)
+        parameters = {'employee_id': employee_id}
+        result = conn.query(query,parameters)
         conn.close()
         
         employees = [record['e']._properties for record in result]
@@ -269,15 +276,16 @@ def update_employee():
     name = data.get('name')
     adress = data.get('adress')
     branch = data.get('branch')
+    employee_id=data.get('employee_id')
  
     conn = nc()
     query = """
-    MATCH (e:Employee {name: $name})
+    MATCH (e:Employee {employee_id: $employee_id})
     SET e.name = $name, e.adress = $adress, e.branch = $branch
     RETURN e
     """
 
-    parameters = {'id':id,'name': name, 'branch': branch, 'adress': adress,}
+    parameters = {'employee_id':employee_id,'name': name, 'branch': branch, 'adress': adress, 'employee_id': employee_id}
     result = conn.query(query, parameters)
     conn.close()
     # Extract the properties of the created car node
@@ -294,18 +302,15 @@ def update_employee():
 @app.route('/delete_employee', methods=['POST'])
 def delete_employee():
     data = request.json
-    name = data.get('name')
-    adress = data.get('adress')
-    branch = data.get('branch')
-    id=data.get('id')
+    employee_id=data.get('employee_id')
 
     conn = nc()
     query = """
-    MATCH (e:Employee {name: $name})
+    MATCH (e:Employee {employee_id: $employee_id})
     DETACH DELETE e
     """
 
-    parameters = {'name': name, 'branch': branch, 'adress': adress,}
+    parameters = {'employee_id': employee_id}
     result = conn.query(query, parameters)
 
     conn.close()
@@ -318,8 +323,136 @@ def delete_employee():
     }
     return jsonify(response), 200 
 
+#order car api
+@app.route('/add_order', methods=['POST'])
+def add_order():
+    data = request.json
+    customer_id = data.get('customer_id')
+    car_id = data.get('car_id')
 
+    conn = nc()
+    query = """
+    MATCH (cust:Customer {customer_id: $customer_id})
+    MATCH (c:Car {car_id: $car_id})
+    CREATE (o:Order {date: date(), price: 100, status: 'booked'})
+    CREATE (cust)-[:ORDERED]->(o)-[:FOR]->(c)
+    SET c.status = 'not available'
+    RETURN o, id(o) as order_id
+    """
+    parameters = {'customer_id': customer_id, 'car_id': car_id}
+    result = conn.query(query, parameters)
+    conn.close()
 
+    if result:
+        order_id = result[0]['order_id']
+        response = {
+            "message": "Order added successfully",
+            "order_id": order_id
+        }
+    else:
+        response = {
+            "message": "Failed to add order",
+            "order": {},
+            "order_id": None
+        }
+
+    return jsonify(response), 201
+
+#cancel order
+@app.route('/cancel_order', methods=['POST'])
+def cancel_order():
+    data = request.json
+    customer_id = data.get('customer_id')
+    car_id = data.get('car_id')
+
+    conn = nc()
+    query = """
+    MATCH (cust:Customer {customer_id: $customer_id})-[:ORDERED]->(o:Order)-[:FOR]->(c:Car {car_id: $car_id})
+    SET c.status = 'available'
+    DETACH DELETE o
+    RETURN o
+    """
+    parameters = {'customer_id': customer_id, 'car_id': car_id}
+    result = conn.query(query, parameters)
+    conn.close()
+
+    if result:
+        response = {
+            "message": "Order cancelled successfully",
+            "customer_id": customer_id,
+            "car_id": car_id
+        }
+    else:
+        response = {
+            "message": "No matching order found",
+            "customer_id": customer_id,
+            "car_id": car_id
+        }
+
+    return jsonify(response), 200
+
+@app.route('/rent_car', methods=['POST'])
+def rent_car():
+    data = request.json
+    customer_id = data.get('customer_id')
+    car_id = data.get('car_id')
+
+    conn = nc()
+    query = """
+    MATCH (cust:Customer {customer_id: $customer_id})-[:ORDERED]->(o:Order)-[:FOR]->(c:Car {car_id: $car_id})
+    SET o.status = 'Rented'
+    RETURN o
+    """
+    parameters = {'customer_id': customer_id, 'car_id': car_id}
+    result = conn.query(query, parameters)
+    conn.close()
+
+    if result:
+        response = {
+            "message": "Rented successfully",
+            "customer_id": customer_id,
+            "car_id": car_id
+        }
+    else:
+        response = {
+            "message": "No matching order found",
+            "customer_id": customer_id,
+            "car_id": car_id
+        }
+
+    return jsonify(response), 200
+
+@app.route('/return_car', methods=['POST'])
+def return_car():
+    data = request.json
+    customer_id = data.get('customer_id')
+    car_id = data.get('car_id')
+    status = data.get('status')
+    conn = nc()
+    query = """
+    MATCH (cust:Customer {customer_id: $customer_id})-[:ORDERED]->(o:Order)-[:FOR]->(c:Car {car_id: $car_id})
+    SET c.status = $status
+    DETACH DELETE o
+    RETURN c.status
+    """
+    parameters = {'customer_id': customer_id, 'car_id': car_id, 'status': status}
+    result = conn.query(query, parameters)
+    conn.close()
+
+    if result:
+        response = {
+            "message": "Returned successfully",
+            "customer_id": customer_id,
+            "car_id": car_id
+        }
+    else:
+        response = {
+            "message": "No matching order found",
+            "customer_id": customer_id,
+            "car_id": car_id
+        }
+
+    return jsonify(response), 200
 # Endepunkt for å slette alle noder
 @app.route("/delete_all", methods=['POST'])
 def delete_all():
