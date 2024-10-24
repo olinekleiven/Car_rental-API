@@ -81,7 +81,7 @@ def update_car():
     car_id=data.get('car_id')
     conn = nc()
     query = """
-    MATCH (c:Car {car_id: $car_id})})
+    MATCH (c:Car {car_id: $car_id})
     SET c.year = $year, c.location = $location, c.status = $status
     RETURN c
     """
@@ -144,6 +144,7 @@ def add_customer():
         "customer": customer
     }
     return jsonify(response), 201
+
 
 #GET COSYUMER
 @app.route('/get_customer', methods=['GET'])
@@ -318,7 +319,7 @@ def delete_employee():
     employee = result[0]['e']._properties if result else {}
 
     response = {
-        "message": "Employee updated sucessfully",
+        "message": "Employee deleted sucessfully",
         "employee": employee
     }
     return jsonify(response), 200 
@@ -329,31 +330,47 @@ def add_order():
     data = request.json
     customer_id = data.get('customer_id')
     car_id = data.get('car_id')
-
     conn = nc()
-    query = """
-    MATCH (cust:Customer {customer_id: $customer_id})
+    # Først sjekk om bilen er tilgjengelig
+    check_query = """
     MATCH (c:Car {car_id: $car_id})
-    CREATE (o:Order {date: date(), price: 100, status: 'booked'})
-    CREATE (cust)-[:ORDERED]->(o)-[:FOR]->(c)
-    SET c.status = 'not available'
-    RETURN o, id(o) as order_id
+    RETURN c.status AS status
     """
-    parameters = {'customer_id': customer_id, 'car_id': car_id}
-    result = conn.query(query, parameters)
-    conn.close()
+    check_parameters = {'car_id': car_id}
+    check_result = conn.query(check_query, check_parameters)
+ 
+    if  check_result == 'available':
+        # Hvis bilen er tilgjengelig, opprett bestillingen
+        query = """
+        MATCH (cust:Customer {customer_id: $customer_id})
+        MATCH (c:Car {car_id: $car_id, status: 'available'})
+        CREATE (o:Order {date: date(), price: 100, status: 'booked'})
+        CREATE (cust)-[:ORDERED]->(o)-[:FOR]->(c)
+        SET c.status = 'not available'
+        RETURN o, id(o) as order_id
+        """
+        parameters = {'customer_id': customer_id, 'car_id': car_id}
+        result = conn.query(query, parameters)
+        conn.close()
 
-    if result:
-        order_id = result[0]['order_id']
-        response = {
-            "message": "Order added successfully",
-            "order_id": order_id
-        }
+        if result:
+            order_id = result[0]['order_id']
+            response = {
+                "message": "Order added successfully",
+                "order_id": order_id
+            }
+        else:
+            response = {
+                "message": "Failed to add order",
+                "order": {},
+                "order_id": None
+            }
     else:
+        # Hvis bilen ikke er tilgjengelig, returner en melding
+        conn.close()
         response = {
-            "message": "Failed to add order",
-            "order": {},
-            "order_id": None
+            "message": "Car is already booked",
+            "car_id": car_id
         }
 
     return jsonify(response), 201
