@@ -333,13 +333,13 @@ def add_order():
     conn = nc()
     # Først sjekk om bilen er tilgjengelig
     check_query = """
-    MATCH (c:Car {car_id: $car_id})
-    RETURN c.status AS status
+    MATCH (c:Car {car_id: $car_id})<-[:FOR]-(o:Order)
+    RETURN COUNT(o) AS order_count
     """
     check_parameters = {'car_id': car_id}
     check_result = conn.query(check_query, check_parameters)
  
-    if  check_result == 'available':
+    if  check_result and check_result[0]['order_count'] == 0:
         # Hvis bilen er tilgjengelig, opprett bestillingen
         query = """
         MATCH (cust:Customer {customer_id: $customer_id})
