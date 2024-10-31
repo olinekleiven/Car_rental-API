@@ -1,0 +1,85 @@
+/* car.css */
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background-color: #5a77ad;
+    color: white;
+    padding: 20px 0;
+}
+
+h1 {
+    margin: 0;
+}
+
+main {
+    margin: 20px auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    margin-top: 20px;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+}
+
+legend {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+section {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    width: calc(100% - 22px); /* Adjust for padding and border */
+}
+
+button {
+    background-color: #5a77ad;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    padding: 10px 20px;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #5a77adae;
+}
+
+#response {
+    background-color: #e9ecef;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 20px auto;
+    padding: 10px;
+    width: 90%;
+    max-width: 600px;
+}

@@ -1,6 +1,6 @@
 # app.py
 #import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 from db_connect import Neo4jConnection as nc
@@ -12,6 +12,12 @@ car_api = Blueprint('car_api', __name__)
 
 
 logging.basicConfig(level=logging.DEBUG)
+
+# For å kjøre frontend
+@app.route('/')
+def home():
+    return send_from_directory('static', 'index.html')
+
 
 # Kode for å legge inn POST /cars
 @app.route('/add_car', methods=['POST'])

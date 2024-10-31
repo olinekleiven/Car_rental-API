@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/car.css">
+    <title>Car Rental API</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Car Rental API</h1>
+    </header>
+
+    <main>
+        <form id="orderForm">
+            <fieldset>
+                <legend>Book Car</legend>
+
+                <section>
+                    <label for="customer_id">Customer ID:</label>
+                    <input type="text" id="customer_id" name="customer_id" required>
+                </section>
+
+                <section>
+                    <label for="car_id">Car ID:</label>
+                    <input type="text" id="car_id" name="car_id" required>
+                </section>
+
+                <section>
+                    <button type="submit">Book Car</button>
+                </section>
+            </fieldset>
+        </form>
+
+        <section id="response"></section>
+    </main>
+
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const customer_id = document.getElementById('customer_id').value;
+            const car_id = document.getElementById('car_id').value;
+            fetch('http://127.0.0.1:5000/add_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ customer_id, car_id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Error: ' + error;
+            });
+        });
+    </script>
+</body>
+</html>
